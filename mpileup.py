@@ -4,7 +4,8 @@ extract positions with a coverage higher than x
 group positions based on coverage
 
 Author: Mirna Baak
-Last editted: 6-11-2015
+email: mirna.baak@wur.nl
+Last edited: 6-11-2015
 """
 #import modules
 from sys import argv
