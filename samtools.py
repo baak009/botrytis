@@ -15,7 +15,6 @@ def sam_to_bam(sam_file):
 	""" sam to  bam with samtools
 	"""
 	print "Converting sam to bam"
-	#view -b -S I12As_S23_R1_001_trimmed0.sam > I12As_S23_R1_001_trimmed0.bam
 	cmd1 = 'samtools view -b -S %s > %s.bam'%(sam_file, sam_file[:-4])
 	print cmd1
 	cmd2 = 'samtools sort %s.bam %s.sorted'%(sam_file[:-4], sam_file[:-4])
