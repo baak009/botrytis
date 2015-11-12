@@ -22,11 +22,12 @@ def htseq(path, sam_file, path2, gff_file):
 		os.path.exists('%s_counts.txt'%(sam_file[:-4])) == False:
 		res1 = subprocess.check_call(cmd1, shell=True)
 		print res1
+		print 'htseq file created: %s_counts.txt'%(sam_file[:-4])
 		
 	else:
 		print 'file does not exist'
-		print 'htseq file created: %s_counts.txt'%(sam_file[:-4])
-		print 'done'
+	
+	print 'done'
 
 
 if __name__ == "__main__":

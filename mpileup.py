@@ -69,6 +69,7 @@ def group_pos(list_pos, length):
 	coo_list: list of coordinates of high expressed regions
 	"""
 	#create emtylists
+	print 'group pos'
 	coo_list = []
 	temp_list = []
 	temp2_list	= []
@@ -94,36 +95,69 @@ def group_pos(list_pos, length):
 			temp2_list = []
 			temp_list.append(start_pos)
 			temp2_list.append(chromosome)
-	return coo_list
+	
 	#print coo_list
 	print len(coo_list)
-
+	return coo_list
+	
 def merge(coo_list,gap):
-        print 'start merge'
-        end_prev = ''
-        begin_prev = ''
-        chrom_prev = ''
-        coo2_list = []
-        temp = []
-        for item in coo_list:
-                chrom = item[0]
-                begin = int(item[1])
-                end = int(item[2])
-                if begin != begin_prev and len(temp) != 0:
-                        coo2_list.append(temp)
-                
-                if chrom == chrom_prev and (begin - end_prev < gap):
-                        temp = [chrom, begin_prev, end]
+    print 'start merge'
+
+    coo2_list = []
+    temp = []
+    new = []
+    for item in coo_list:
+    	#print 'item', item
+        chrom = item[0]
+        begin = int(item[1])
+        end = int(item[2])
+        if len(temp) == 0:
+            temp = [chrom, begin, end]
+
+        if chrom == temp[0] and (begin - temp[2] < gap):
+            new = [chrom, temp[1], end]
                         
-                else:
-                        temp = [chrom, begin, end]
-                end_prev = end
-                begin_prev = begin
-                chrom_prev = chrom
+        else:
+            coo2_list.append(temp)
+            new = [chrom, begin, end]
+
+        temp = new
+
         
-        coo2_list.append(temp)
-        print coo2_list
-        return coo2_list
+    coo2_list.append(temp)
+    #print coo2_list
+    print len(coo2_list)
+    return coo2_list
+
+def to_gff(coo_list, length, cov, gap):
+	print 'to gff file'
+	output = open('coo_%s.gff'%(file_name[:6]), 'w')
+	counter = 1
+	source_2 = 'script_mpileup_l:%s,c:%s,g:%s'%(length,cov,gap)
+	type3 = 'sRNA'
+	
+	score = '.'
+	strand = '.'
+	phase = '.'
+	
+	for item in coo_list:
+		
+		seqid = item[0]
+		start = item[1]
+		
+		end = item[2]
+		
+		name = ('Name=B_%s;ID=%s:%s..%S'%(counter,seqid,start,stop))
+		
+		stringo = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(
+			seqid, source_2, type3, start, end, score,strand,phase,name)
+		
+		counter += 1
+		output.write(stringo)
+
+        
+	output.close()
+	print 'done'
 
 def write_output(coo_list, file_name, cov, length, gap):
 	""" write output to file
@@ -138,7 +172,7 @@ def write_output(coo_list, file_name, cov, length, gap):
 	output.write("minimum coverage: %s\nminimum length: %s\ngap: %s\n\n"%(cov, length, gap))
 	#write coordinates to outputfile
 	for item in coo_list:
-                print item
+                #print item
 		output.write('%s\t%s\t%s\n'%(item[0], item[1], item[2]))
 
 	output.close()
@@ -154,14 +188,17 @@ if __name__ == "__main__":
 	counter = 1
 	length = 15 # minumum length of selected piece 
 	cov = 5 # minimum number of reads
-	gap = 25
+	gap = 5
+
 	for file_name in dirs:
 		#if file_name[-11:] == ".sorted.bam" and counter == 1:
 		if file_name[-7:] == "_nn.bam" and counter == 1:	
 			pileup_name = mpileup(file_name)
 			list_pos = extract_pos(pileup_name, cov)
 			coo_list = group_pos(list_pos, length)
+			#coo_list = [['Bcin1', 1, 10],['Bcin1', 15, 20], ['Bcin1', 22, 30],['Bcin1', 34, 35]]
 			coo2_list = merge(coo_list, gap)
+			to_gff(coo2_list, length, cov, gap)
 			write_output(coo2_list, file_name, cov, length, gap)
 			#counter += 1
 

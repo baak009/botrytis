@@ -57,24 +57,24 @@ if __name__ == "__main__":
 	# create a list of the files in the directory
 	dirs = os.listdir(path_fastq)
 	# splice site file created with extract_splice_sites.py
-	splice_site_file_name = '/mnt/scratch/baak009/data/splice_sites_ITAG2.4.txt'
+	splice_site_file_name = '/mnt/scratch/baak009/botrytis_gff/splice_sites_BcinB0510_gtf.txt'
 	#prefix of reference genome
-	ref_name = 'S_lyc2.50'
+	ref_name = 'BcinB0510'
 	#reference genome
-	fasta_file_name = '/mnt/scratch/baak009/data/S_lycopersicum_chromosomes.2.50.fa'
+	fasta_file_name = '/mnt/scratch/baak009/data/NCBI_BcinB0510_revised11012015_2.fasta'
 
 	#execute hisat2-build
 	hisat2_build(fasta_file_name, ref_name)
 	counter = 1
 	# execute for all fastq files in directory hisat2
-	file_name = 'M16Am.fastq' 
-	hisat2(splice_site_file_name, ref_name, path_fastq, file_name)
+	#file_name = 'M12Am.fastq' 
+	#hisat2(splice_site_file_name, ref_name, path_fastq, file_name)
+
 	
-	'''
 	for file_name in dirs:
 		if file_name[-6:] == ".fastq" and counter == 1:
 			hisat2(splice_site_file_name, ref_name, path_fastq, file_name)
 
 			#counter += 1
-    '''
+    
 
