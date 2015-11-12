@@ -37,7 +37,7 @@ def sam_to_bam(sam_file):
 
 if __name__ == "__main__":
 
-	path = "/mnt/scratch/baak009/hisat2/tomato/"
+	path = "/mnt/scratch/baak009/hisat2/tomato/w_cuff"
 	dirs = os.listdir(path)
 	counter = 1
 
