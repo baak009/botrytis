@@ -98,7 +98,34 @@ def group_pos(list_pos, length):
 	#print coo_list
 	print len(coo_list)
 
-def write_output(coo_list, file_name, cov, length):
+def merge(coo_list,gap):
+        print 'start merge'
+        end_prev = ''
+        begin_prev = ''
+        chrom_prev = ''
+        coo2_list = []
+        temp = []
+        for item in coo_list:
+                chrom = item[0]
+                begin = int(item[1])
+                end = int(item[2])
+                if begin != begin_prev and len(temp) != 0:
+                        coo2_list.append(temp)
+                
+                if chrom == chrom_prev and (begin - end_prev < gap):
+                        temp = [chrom, begin_prev, end]
+                        
+                else:
+                        temp = [chrom, begin, end]
+                end_prev = end
+                begin_prev = begin
+                chrom_prev = chrom
+        
+        coo2_list.append(temp)
+        print coo2_list
+        return coo2_list
+
+def write_output(coo_list, file_name, cov, length, gap):
 	""" write output to file
 	coo_list: list of coordinates of high expressed regions
 	file_name: sorted bam file name
@@ -108,9 +135,10 @@ def write_output(coo_list, file_name, cov, length):
 	#open output file
 	output = open('coo_list_%s.txt'%(file_name[:6]), 'w')
 	#write first line to output file with info
-	output.write("minimum coverage: %s\nminimum length: %s\n\n"%(cov, length))
+	output.write("minimum coverage: %s\nminimum length: %s\ngap: %s\n\n"%(cov, length, gap))
 	#write coordinates to outputfile
 	for item in coo_list:
+                print item
 		output.write('%s\t%s\t%s\n'%(item[0], item[1], item[2]))
 
 	output.close()
@@ -119,18 +147,21 @@ if __name__ == "__main__":
 	"""Execute functions 
 	"""
 	#path = os.getcwd()
-	#path = "/mnt/scratch/baak009/bowtie/unique_botrytis/clean_t_R/"
+	path = "/mnt/scratch/baak009/bowtie/unique_botrytis/clean_t_R/"
 	#path of directory with bam files
-	path = "/mnt/scratch/baak009/bowtie/unique_tomato/clean_t_r/"
+	#path = "/mnt/scratch/baak009/bowtie/unique_tomato/clean_t_r/"
 	dirs = os.listdir(path)
 	counter = 1
 	length = 15 # minumum length of selected piece 
 	cov = 5 # minimum number of reads
+	gap = 25
 	for file_name in dirs:
-		if file_name[-11:] == ".sorted.bam" and counter == 1:
+		#if file_name[-11:] == ".sorted.bam" and counter == 1:
+		if file_name[-7:] == "_nn.bam" and counter == 1:	
 			pileup_name = mpileup(file_name)
-			#list_pos = extract_pos(pileup_name, cov)
-			#coo_list = group_pos(list_pos, length)
-			#write_output(coo_list, file_name, cov, length)
+			list_pos = extract_pos(pileup_name, cov)
+			coo_list = group_pos(list_pos, length)
+			coo2_list = merge(coo_list, gap)
+			write_output(coo2_list, file_name, cov, length, gap)
 			#counter += 1
 
