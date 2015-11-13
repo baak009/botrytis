@@ -22,16 +22,16 @@ def sam_to_bam(sam_file):
 	cmd3 = 'samtools index %s.sorted.bam'%(sam_file[:-4])
 	print cmd3
 
-	if os.path.exists(sam_file):
+	if os.path.exists(sam_file) and os.path.exists('%s.bam'% (sam_file[:-4])) == False:
 			res1 = subprocess.check_call(cmd1, shell=True)
 			print res1
 			res2 = subprocess.check_call(cmd2, shell=True)
 			print res2
 			res3 = subprocess.check_call(cmd3, shell=True)
 			print res3
+			print 'bam file created: %s.bam'%(sam_file[:-4])
 	else:
 		print 'file does not exist'
-		print 'bam file created: %s.bam'%(sam_file[:-4])
 		print 'done'
 
 
