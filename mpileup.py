@@ -131,7 +131,7 @@ def merge(coo_list,gap):
 
 def to_gff(coo_list, length, cov, gap):
 	print 'to gff file'
-	output = open('coo_%s.gff'%(file_name[:6]), 'w')
+	output = open('coo_%s_%s_%s_%s.gff'%(file_name[:6],length,cov,gap), 'w')
 	counter = 1
 	source_2 = 'script_mpileup_l:%s,c:%s,g:%s'%(length,cov,gap)
 	type3 = 'sRNA'
@@ -147,7 +147,7 @@ def to_gff(coo_list, length, cov, gap):
 		
 		end = item[2]
 		
-		name = ('Name=B_%s;ID=%s:%s..%S'%(counter,seqid,start,stop))
+		name = ('Name=B_%s;ID=%s:%s..%s'%(counter,seqid,start,end))
 		
 		stringo = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(
 			seqid, source_2, type3, start, end, score,strand,phase,name)
@@ -167,7 +167,7 @@ def write_output(coo_list, file_name, cov, length, gap):
 	length: minimum lenght of fragment (int)
 	"""
 	#open output file
-	output = open('coo_list_%s.txt'%(file_name[:6]), 'w')
+	output = open('coo_list_%s_%s_%s_%s.txt'%(file_name[:6],length,cov,gap), 'w')
 	#write first line to output file with info
 	output.write("minimum coverage: %s\nminimum length: %s\ngap: %s\n\n"%(cov, length, gap))
 	#write coordinates to outputfile
@@ -187,8 +187,8 @@ if __name__ == "__main__":
 	dirs = os.listdir(path)
 	counter = 1
 	length = 15 # minumum length of selected piece 
-	cov = 5 # minimum number of reads
-	gap = 5
+	cov = 3 # minimum number of reads
+	gap = 2
 
 	for file_name in dirs:
 		#if file_name[-11:] == ".sorted.bam" and counter == 1:
