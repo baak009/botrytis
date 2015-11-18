@@ -68,7 +68,7 @@ if __name__ == "__main__":
 	#file_name = "S_lycopersicum_chromosomes.2.50.fa"
 	ref_name = argv[2] # "B_cinB0510"
 	#ref_name = "S_lyn_2_50"
-	bowtie_build(file_name, ref_name)
+	#bowtie_build(file_name, ref_name)
 	#path2 = "/mnt/scratch/baak009/trimmed_adapt_reads/"
 	
 
@@ -82,4 +82,4 @@ if __name__ == "__main__":
 	#running bowtie
 	output_sam = bowtie(num_mismatch,file_name_fastq)
 	#output_sam = 'I12As_S23_R1_001_trimmed0.sam' 
-	sam_to_bam(output_sam)
+	#sam_to_bam(output_sam)

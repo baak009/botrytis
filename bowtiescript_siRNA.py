@@ -25,7 +25,7 @@ def bowtie(num_mismatch, file_name_fastq):
 	if os.path.exists(file_name_fastq) and os.path.exists(output_sam) == False:
 		#output_sam = file_name_fastq2[-1]+str(num_mismatch) + '.sam'
 		print '3', output_sam
-		cmd = 'bowtie -S -v %s -a %s %s %s 2> stats_%s_%s_a.txt'%(num_mismatch, ref_name, 
+		cmd = 'bowtie -S -v %s -a %s -f %s %s 2> stats_%s_%s_a.txt'%(num_mismatch, ref_name, 
 			file_name_fastq, output_sam, file_name_fastq2[-1], num_mismatch)
 		res1 = subprocess.check_call(cmd, shell=True)
 		print res1
@@ -33,33 +33,6 @@ def bowtie(num_mismatch, file_name_fastq):
 	else:
 		print 'file does not exist'
 	return output_sam
-
-def sam_to_bam(sam_file):
-	""" sam to  bam with samtools
-	"""
-	print "Converting sam to bam"
-	#view -b -S I12As_S23_R1_001_trimmed0.sam > I12As_S23_R1_001_trimmed0.bam
-	cmd1 = 'samtools view -b -S %s > %s.bam'%(sam_file, sam_file[:-4])
-	print cmd1
-	#cmd2 = 'samtools sort %s.bam %s.sorted'%(sam_file[:-4], sam_file[:-4])
-	#print cmd2
-	#cmd3 = 'samtools index %s.sorted.bam'%(sam_file[:-4])
-	#print cmd3
-
-	
-	if os.path.exists(sam_file):
-		res1 = subprocess.check_call(cmd1, shell=True)
-		print res1
-		#res2 = subprocess.check_call(cmd2, shell=True)
-		#print res2
-		#res3 = subprocess.check_call(cmd3, shell=True)
-		#print res3
-	else:
-		print 'file does not exist'
-	print 'bam file created: %s.bam'%(sam_file[:-4])
-	print 'done'
-
-
 
 
 if __name__ == "__main__":

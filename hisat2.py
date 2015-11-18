@@ -67,14 +67,14 @@ if __name__ == "__main__":
 	hisat2_build(fasta_file_name, ref_name)
 	counter = 1
 	# execute for all fastq files in directory hisat2
-	file_name = 'M16Am.fastq' 
-	hisat2(splice_site_file_name, ref_name, path_fastq, file_name)
+	#file_name = 'M16Am.fastq' 
+	#hisat2(splice_site_file_name, ref_name, path_fastq, file_name)
 	
-	'''
+	
 	for file_name in dirs:
 		if file_name[-6:] == ".fastq" and counter == 1:
 			hisat2(splice_site_file_name, ref_name, path_fastq, file_name)
 
 			#counter += 1
-    '''
+    
 
