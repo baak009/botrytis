@@ -5,7 +5,7 @@ import subprocess
 
 if __name__ == "__main__":
 	path = '/mnt/scratch/baak009/bowtie/tomato_on_botrytis/'
-	#path = os.getcwd()
+	path = os.getcwd()
 	dirs = os.listdir(path)
 	listnum = []
 	x = 0
