@@ -31,7 +31,7 @@ def cuffmerge(gtf_nm, ref_genome, assemblie):
 	""" cuffmerge
 	"""
 	print "cuffmerge"
-	cmd1 = 'cuffmerge -g %s -s %s %s'%(gtf_nm, ref_genome, assemblie)
+	cmd1 = 'cuffmerge -p 4 -g %s -s %s %s'%(gtf_nm, ref_genome, assemblie)
 	print assemblie
 	if os.path.exists(assemblie) and os.path.exists('merged_asm/merged.gtf') == False:
 			res1 = subprocess.check_call(cmd1, shell=True)
@@ -40,13 +40,16 @@ def cuffmerge(gtf_nm, ref_genome, assemblie):
 	else:
 		print 'file does not exist'
 	print 'done'
+def cuffquant():
+	print 'iets'
 
+	
 def cuffdiff(diff_name, ref_genome, sample_names, bam_files):
 	""" cuff_diff
 	"""
 	output_nm = 'outdiff_%s'%(diff_name)
 	print "cuffdiff"
-	cmd1 = 'cuffdiff -o %s -b %s -L %s -u merged_asm/merged.gtf %s'%(
+	cmd1 = 'cuffdiff -p 4 -o %s -b %s -L %s -u merged_asm/merged.gtf %s'%(
 		output_nm, ref_genome, sample_names, bam_files)
 	print cmd1
 	if os.path.exists('merged_asm/merged.gtf') and os.path.exists(output_nm) == False:
@@ -69,21 +72,26 @@ if __name__ == "__main__":
 	#print file_name
 	gtf_name = '/mnt/scratch/baak009/data/ITAG2.4_gene_models.gtf'
 	ref_genome  = '/mnt/scratch/baak009/data/S_lycopersicum_chromosomes.2.50.fa'
-	assemblie = 'assemblies.txt'
+	assemblie = 'assemblie_I_M.txt'
 	#cufflinks(pros, file_name, gtf_name)
 	
-	diff_name = 'testtt'
-	sample_names = 'M12Am,M16Am'
-	bam_files = './M12Am_hisat2.sorted.bam, ./M16Am_hisat2.sorted.bam'
+	diff_name = 'I_M_tomato'
+	sample_names = 'M12,M16,M24,I12,I16,I24'
+	bam_files = './M12Am_hisat2.sorted.bam \
+	./M16Am_hisat2.sorted.bam \
+	./M24Am_hisat2.sorted.bam \
+	./I12Am_hisat2.sorted.bam,./I12Bm_hisat2.sorted.bam \
+	./I16Am_hisat2.sorted.bam,./I16Bm_hisat2.sorted.bam \
+	./I24Bm_hisat2.sorted.bam,./I24Dm_hisat2.sorted.bam'
 
 	
-	
+	'''
 	for file_name in dirs:
 		if file_name[-11:] == ".sorted.bam" and counter == 1:
 			cufflinks(pros, file_name, gtf_name)
 
 		#counter += 1
-	
+	'''
 	#cuffmerge(gtf_name, ref_genome, assemblie)
-	#cuffdiff(diff_name, ref_genome, sample_names, bam_files)
+	cuffdiff(diff_name, ref_genome, sample_names, bam_files)
 	
