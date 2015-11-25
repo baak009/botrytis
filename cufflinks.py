@@ -72,19 +72,24 @@ if __name__ == "__main__":
 	#print file_name
 	gtf_name = '/mnt/scratch/baak009/data/ITAG2.4_gene_models.gtf'
 	ref_genome  = '/mnt/scratch/baak009/data/S_lycopersicum_chromosomes.2.50.fa'
-	assemblie = 'assemblie_I_M.txt'
+	#assemblie = 'assemblie_I_M.txt'
 	#cufflinks(pros, file_name, gtf_name)
-	
-	diff_name = 'I_M_tomato'
-	sample_names = 'M12,M16,M24,I12,I16,I24'
+	assemblie = 'assemblie_M.txt'
+	#diff_name = 'I_M_tomato'
+	diff_name = 'M_tomato'
+	#sample_names = 'M12,M16,M24,I12,I16,I24'
+	sample_names = 'M12,M16,M24'
+	#bam_files = './M12Am_hisat2.sorted.bam \
+	#./M16Am_hisat2.sorted.bam \
+	#./M24Am_hisat2.sorted.bam \
+	#./I12Am_hisat2.sorted.bam,./I12Bm_hisat2.sorted.bam \
+	#./I16Am_hisat2.sorted.bam,./I16Bm_hisat2.sorted.bam \
+	#./I24Bm_hisat2.sorted.bam,./I24Dm_hisat2.sorted.bam'
+
 	bam_files = './M12Am_hisat2.sorted.bam \
 	./M16Am_hisat2.sorted.bam \
-	./M24Am_hisat2.sorted.bam \
-	./I12Am_hisat2.sorted.bam,./I12Bm_hisat2.sorted.bam \
-	./I16Am_hisat2.sorted.bam,./I16Bm_hisat2.sorted.bam \
-	./I24Bm_hisat2.sorted.bam,./I24Dm_hisat2.sorted.bam'
+	./M24Am_hisat2.sorted.bam'
 
-	
 	'''
 	for file_name in dirs:
 		if file_name[-11:] == ".sorted.bam" and counter == 1:
@@ -92,6 +97,6 @@ if __name__ == "__main__":
 
 		#counter += 1
 	'''
-	#cuffmerge(gtf_name, ref_genome, assemblie)
+	cuffmerge(gtf_name, ref_genome, assemblie)
 	cuffdiff(diff_name, ref_genome, sample_names, bam_files)
 	

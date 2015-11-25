@@ -3,7 +3,7 @@
 """Htseq
 
 Author: Mirna Baak
-Last editted: 10-11-2015
+Last editted: 23-11-2015
 """
 #import modules
 from sys import argv
@@ -13,7 +13,7 @@ import subprocess
 def htseq(path, sam_file, path2, gff_file):
 	""" hstseq 
 	"""
-	print "Converting sam to bam"
+	print "HtSeq"
 	cmd1 = 'python -m HTSeq.scripts.count %s %s > %s_counts.txt'%(path+sam_file, 
 		path2+gff_file, sam_file[:-4])
 	print cmd1
@@ -32,7 +32,7 @@ def htseq(path, sam_file, path2, gff_file):
 
 if __name__ == "__main__":
 
-	path = "/mnt/scratch/baak009/hisat2/tomato/"
+	path = "/mnt/scratch/baak009/hisat2/tomato2/"
 	dirs = os.listdir(path)
 	path2 = "/mnt/scratch/baak009/data/"
 	gff_file = "ITAG2.4_gene_models.gtf"

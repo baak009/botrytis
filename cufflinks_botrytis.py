@@ -10,14 +10,16 @@ from sys import argv
 import os
 import subprocess
 
+
 def cufflinks(pros, bam_nm, gtf_nm):
 	""" cufflinks 
 	"""
 	output_nm = 'outcl_%s'%(bam_nm[:-11])
 	print "Converting cufflinks step 1"
+	print bam_nm
 	cmd1 = 'cufflinks -p %s -g %s -o %s %s'%(pros, gtf_nm, output_nm, bam_nm)
 	
-	if os.path.exists(bam_nm) and os.path.exists('outcl_%s'%(bam_nm[:-4])) == False:
+	if os.path.exists(bam_nm) and os.path.exists(output_nm) == False:
 			res1 = subprocess.check_call(cmd1, shell=True)
 			print res1
 			
@@ -62,25 +64,31 @@ if __name__ == "__main__":
 	path = os.getcwd()
 	dirs = os.listdir(path)
 	counter = 1
-	pros = 2
+	pros = 4
 	#file_name = 'M16Am_hisat2.sorted.bam'
 	#file_name = 'B16Am_hisat2.sorted.bam'
-	file_name = 'B16Bm_hisat2.sorted.bam'
-	print file_name
+	#file_name = 'B16Bm_hisat2.sorted.bam'
+	#print file_name
 	gtf_name = '/mnt/scratch/baak009/data/BcinB0510_finalannotations_January2015B.michael.gff'
 	ref_genome  = '/mnt/scratch/baak009/data/NCBI_BcinB0510_revised11012015_2.fasta'
-	assemblie = 'assemblies.txt'
+	assemblie = 'assemblies_I_B.txt'
 	#cufflinks(pros, file_name, gtf_name)
 	#cuffmerge(gtf_name, ref_genome, assemblie)
-	diff_name = 'testt'
-	sample_names = 'B16Am,B16Bm'
-	bam_files = './B16Am_hisat2.sorted.bam, ./B16Bm_hisat2.sorted.bam'
+	diff_name = 'I_B_botrytis'
+	sample_names = 'B16,I12,I16,I24'
+	bam_files = './B16Am_hisat2.sorted.bam,./B16Bm_hisat2.sorted.bam \
+	./I12Am_hisat2.sorted.bam,./I12Bm_hisat2.sorted.bam \
+	./I16Am_hisat2.sorted.bam,./I16Bm_hisat2.sorted.bam \
+	./I24Bm_hisat2.sorted.bam,./I24Dm_hisat2.sorted.bam'
 
-	cuffdiff(diff_name, ref_genome, sample_names, bam_files)
-	'''
+
+	
+	
 	for file_name in dirs:
 		if file_name[-11:] == ".sorted.bam" and counter == 1:
-			cufflinks(pros, file_name)
+			cufflinks(pros, file_name, gtf_name)
 
-		counter += 1
-	'''
+		#counter += 1
+	cuffmerge(gtf_name, ref_genome, assemblie)
+	cuffdiff(diff_name, ref_genome, sample_names, bam_files)
+	

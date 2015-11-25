@@ -19,7 +19,7 @@ def mpileup(file_name):
 	file_name: sorted bam file 
 	"""
 	#create outputname of mpileup file
-	output_name = file_name[:5] + '_pileup.txt'
+	output_name = file_name[:-4] + '_pileup.txt'
 	print output_name
 	#check if output already exists, if not execute mpileup
 	if os.path.exists('%s'%(output_name)) == False:
@@ -186,13 +186,14 @@ if __name__ == "__main__":
 	#path = "/mnt/scratch/baak009/bowtie/unique_tomato/clean_t_r/"
 	dirs = os.listdir(path)
 	counter = 1
-	length = 15 # minumum length of selected piece 
+	length = 18 # minumum length of selected piece 
 	cov = 3 # minimum number of reads
 	gap = 2
 
 	for file_name in dirs:
 		#if file_name[-11:] == ".sorted.bam" and counter == 1:
-		if file_name[-7:] == "_nn.bam" and counter == 1:	
+		if file_name[-9:] == "f_bam.bam" and counter == 1:
+			print file_name	
 			pileup_name = mpileup(file_name)
 			list_pos = extract_pos(pileup_name, cov)
 			coo_list = group_pos(list_pos, length)
