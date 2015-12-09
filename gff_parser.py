@@ -5,7 +5,7 @@
 from sys import argv
 import os
 import subprocess
-def gff_change_chr_name(lines):
+def gff_change_chr_name(lines): # does not work
 	print lines
 	prefix = 'BCIN'
 	for line in lines:
@@ -47,7 +47,7 @@ def extract_UTR(lines, output_name):
 	#return region_all
 
 def getfasta(ref_genome, bed_file, output):
-	""" Executing samtools faidx ### COPPIED OF REGIONS_EXTRACTION!!!
+	""" Executing bedtools getfasta ### COPPIED OF REGIONS_EXTRACTION!!!
 	"""
 	print 'executing bedtools getfasta'
 	if os.path.exists(ref_genome): #and os.path.exists(output_name) == False: 
@@ -57,6 +57,20 @@ def getfasta(ref_genome, bed_file, output):
 		res1 = subprocess.check_call(cmd,shell=True)
 		print 'res1'
 		print res1
+
+
+def extract_gene__id_name(lines):
+	for line in lines:
+		line = line.strip().split()
+		print line
+		temp = line[-1]
+		print temp
+		temp = temp.split(';')
+		print temp
+		name = temp[0]
+		id_name = temp[-1]
+		print name, id_name
+
 
 
 if __name__ == "__main__":
@@ -73,4 +87,5 @@ if __name__ == "__main__":
 	#while True():
 	# OSError: Argument list too long.... 
 
-	gff_change_chr_name(lines)
+	#gff_change_chr_name(lines)
+	extract_gene__id_name(lines)

@@ -123,7 +123,7 @@ if __name__ == "__main__":
 	# select unique reads
 	# length filtering
 	# 
-	#path = "/mnt/scratch/baak009/hisat2/tomato/w_cuff"
+	
 	path = os.getcwd()
 	dirs = os.listdir(path)
 	counter = 1

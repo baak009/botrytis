@@ -2,7 +2,7 @@
 size_selection of bam 
 BBmap and samtools required 
 Author: Mirna Baak
-Last editted: 23-11-2015
+Last editted: 7-12-2015
 """
 #import modules
 from sys import argv
@@ -12,7 +12,7 @@ import subprocess
 def size_selection(input_nm, minlength, maxlength):
 	""" size selection with bbmap reformat
 	"""
-	print "Converting sam to bam"
+	print "size selection
 	output_nm = '%s_f.bam'%(input_nm[:-4])
 	cmd1 = 'reformat.sh in=%s out=%s minlength=%s maxlength=%s 2>stats_%s'%(
 		input_nm, output_nm, minlength, maxlength,output_nm)
@@ -31,7 +31,6 @@ def size_selection(input_nm, minlength, maxlength):
 
 if __name__ == "__main__":
 
-	#path = "/mnt/scratch/baak009/hisat2/tomato/w_cuff"
 	path = os.getcwd()
 	dirs = os.listdir(path)
 	counter = 1

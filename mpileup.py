@@ -5,7 +5,11 @@ group positions based on coverage
 
 Author: Mirna Baak
 email: mirna.baak@wur.nl
-Last edited: 6-11-2015
+Last edited: 8-12-2015
+
+change the directory pileup, create it 
+
+run in clean_t_R/pileup
 """
 #import modules
 from sys import argv
@@ -131,7 +135,7 @@ def merge(coo_list,gap):
 
 def to_gff(coo_list, length, cov, gap):
 	print 'to gff file'
-	output = open('coo_%s_%s_%s_%s.gff'%(file_name[:6],length,cov,gap), 'w')
+	output = open('coo_%s_%s_%s_%s.gff'%(file_name[:-4],length,cov,gap), 'w')
 	counter = 1
 	source_2 = 'script_mpileup_l:%s,c:%s,g:%s'%(length,cov,gap)
 	type3 = 'sRNA'
@@ -167,7 +171,7 @@ def write_output(coo_list, file_name, cov, length, gap):
 	length: minimum lenght of fragment (int)
 	"""
 	#open output file
-	output = open('coo_list_%s_%s_%s_%s.txt'%(file_name[:6],length,cov,gap), 'w')
+	output = open('coo_list_%s_%s_%s_%s.txt'%(file_name[:-4],length,cov,gap), 'w')
 	#write first line to output file with info
 	output.write("minimum coverage: %s\nminimum length: %s\ngap: %s\n\n"%(cov, length, gap))
 	#write coordinates to outputfile
@@ -176,20 +180,95 @@ def write_output(coo_list, file_name, cov, length, gap):
 		output.write('%s\t%s\t%s\n'%(item[0], item[1], item[2]))
 
 	output.close()
+
+def bedtools_multicov(file_names, gff_file_nm):
+	"""execute multicov bedtools
+
+	file_name: sorted bam file 
+	"""
+	print 'bedtools multicov'
+	#create outputname of mpileup file
+	output_name = 'cov_'+ file_name[:-4] + '.txt'
+	stats_multicov = open(('stats_multicov_'+ file_name[:-4] + '.txt'), 'w')
+	print output_name
+	#check if output already exists, if not execute mpileup
+	if os.path.exists('%s'%(output_name)) == False:
+		cmd = 'cd ..; bedtools multicov -bams %s -bed ./pileup/%s > %s'%(file_names,
+		gff_file_nm, output_name) # bed file path moet nog anders
+		print cmd 
+		e = subprocess.check_call(cmd, shell=True)
+		print e
+	else: 
+		print "multicov file already exist"
+
+	stats_multicov.write(string_files)
+	stats_multicov.close()
+	return output_name
+	'dit nog maken'
+
+def bam_index(path, bam_file):
+	""" sam to  bam with samtools
+	"""
 	
+	cmd3 = 'samtools index %s'%(path+bam_file)
+	print cmd3
+	print os.getcwd()
+	if os.path.exists(path+bam_file) and os.path.exists('%s.bai'% (path+bam_file[:-4])) == False:
+			res3 = subprocess.check_call(cmd3, shell=True)
+			print res3
+			
+	else:
+		print 'file does not exist'
+		print 'done'
+
+
+
 if __name__ == "__main__":
 	"""Execute functions 
 	"""
 	#path = os.getcwd()
-	path = "/mnt/scratch/baak009/bowtie/unique_botrytis/clean_t_R/"
+	#path = "/mnt/scratch/baak009/bowtie/unique_botrytis/clean_t_R/"
 	#path of directory with bam files
-	#path = "/mnt/scratch/baak009/bowtie/unique_tomato/clean_t_r/"
+	path = "/mnt/scratch/baak009/bowtie/unique_tomato/clean_t_r/"
 	dirs = os.listdir(path)
+	
 	counter = 1
 	length = 18 # minumum length of selected piece 
-	cov = 3 # minimum number of reads
+	#cov = 3 # botrytis
+	cov = 50 # minimum number of reads tomato
 	gap = 2
+	print 'length',length, 'cov',cov, 'gap', gap
+	file_name = 'merged_all_f_I.bam'
+	#file_name = 'merged_all_f_AF.bam'
+	#file_name = 'merged_all_f_bam.bam'
+	#file_name = 'merged_all_nn.bam'
+	gff_file_nm = 'coo_%s_%s_%s_%s.gff'%(file_name[:-4],length,cov,gap)
+	pileup_name = mpileup(file_name)
+	list_pos = extract_pos(pileup_name, cov)
+	coo_list = group_pos(list_pos, length)
+	coo2_list = merge(coo_list, gap)
+	to_gff(coo2_list, length, cov, gap)
+	write_output(coo2_list, file_name, cov, length, gap)
 
+	string_files = ""
+	list_files = []
+	for bam_name in dirs:
+		#print file_name
+		#if file_name[-11:] == ".sorted.bam" and counter == 1:
+		if bam_name[-12:] == "sorted_f.bam" and bam_name[:5] != "stats" and counter == 1:
+			#print file_name
+			list_files.append(bam_name)
+			if os.path.exists(path+bam_name + '.bai') == False:
+				bam_index(path,bam_name)
+			#string_files = "%s %s "%(string_files, file_name)
+	#print list_files
+	list_file = list_files.sort()
+	#print list_files
+
+	string_files = ' '.join(list_files)
+	bedtools_multicov(string_files, gff_file_nm)
+
+	'''		#counter += 1
 	for file_name in dirs:
 		#if file_name[-11:] == ".sorted.bam" and counter == 1:
 		if file_name[-9:] == "f_bam.bam" and counter == 1:
@@ -202,4 +281,4 @@ if __name__ == "__main__":
 			to_gff(coo2_list, length, cov, gap)
 			write_output(coo2_list, file_name, cov, length, gap)
 			#counter += 1
-
+	''' 
