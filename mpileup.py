@@ -135,33 +135,36 @@ def merge(coo_list,gap):
 
 def to_gff(coo_list, length, cov, gap):
 	print 'to gff file'
-	output = open('coo_%s_%s_%s_%s.gff'%(file_name[:-4],length,cov,gap), 'w')
-	counter = 1
-	source_2 = 'script_mpileup_l:%s,c:%s,g:%s'%(length,cov,gap)
-	type3 = 'sRNA'
-	
-	score = '.'
-	strand = '.'
-	phase = '.'
-	
-	for item in coo_list:
+	output_gff_nm = 'coo_%s_%s_%s_%s.gff'%(file_name[:-4],length,cov,gap)
+	if os.path.exists(output_gff_nm) == False:
+		output = open(output_gff_nm, 'w')
+		counter = 1
+		source_2 = 'script_mpileup_l:%s,c:%s,g:%s'%(length,cov,gap)
+		type3 = 'sRNA'
 		
-		seqid = item[0]
-		start = item[1]
+		score = '.'
+		strand = '.'
+		phase = '.'
 		
-		end = item[2]
-		
-		name = ('Name=B_%s;ID=%s:%s..%s'%(counter,seqid,start,end))
-		
-		stringo = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(
-			seqid, source_2, type3, start, end, score,strand,phase,name)
-		
-		counter += 1
-		output.write(stringo)
+		for item in coo_list:
+			
+			seqid = item[0]
+			start = item[1]
+			end = item[2]
+			
+			name = ('Name=B_%s;ID=%s:%s..%s'%(counter,seqid,start,end))
+			
+			stringo = '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(
+				seqid, source_2, type3, start, end, score,strand,phase,name)
+			
+			counter += 1
+			output.write(stringo)
 
-        
-	output.close()
-	print 'done'
+	        
+		output.close()
+		print 'done'
+	else:
+		print 'output_gff already exists'
 
 def write_output(coo_list, file_name, cov, length, gap):
 	""" write output to file
@@ -171,25 +174,29 @@ def write_output(coo_list, file_name, cov, length, gap):
 	length: minimum lenght of fragment (int)
 	"""
 	#open output file
-	output = open('coo_list_%s_%s_%s_%s.txt'%(file_name[:-4],length,cov,gap), 'w')
-	#write first line to output file with info
-	output.write("minimum coverage: %s\nminimum length: %s\ngap: %s\n\n"%(cov, length, gap))
-	#write coordinates to outputfile
-	for item in coo_list:
-                #print item
-		output.write('%s\t%s\t%s\n'%(item[0], item[1], item[2]))
+	output_list_nm = 'coo_list_%s_%s_%s_%s.txt'%(file_name[:-4],length,cov,gap)
+	if os.path.exists(output_list_nm) == False:
+		output = open(output_list_nm, 'w')
+		#write first line to output file with info
+		output.write("minimum coverage: %s\nminimum length: %s\ngap: %s\n\n"%(cov, length, gap))
+		#write coordinates to outputfile
+		for item in coo_list:
+	                #print item
+			output.write('%s\t%s\t%s\n'%(item[0], item[1], item[2]))
 
-	output.close()
+		output.close()
+	else:
+		print 'coo_list already exists'
 
-def bedtools_multicov(file_names, gff_file_nm):
+def bedtools_multicov(file_names, gff_file_nm, cov, length, gap):
 	"""execute multicov bedtools
 
 	file_name: sorted bam file 
 	"""
 	print 'bedtools multicov'
 	#create outputname of mpileup file
-	output_name = 'cov_'+ file_name[:-4] + '.txt'
-	stats_multicov = open(('stats_multicov_'+ file_name[:-4] + '.txt'), 'w')
+	output_name = 'cov_%s_%s_%s_%s.txt'%(file_name[:-4], cov,length,gap)
+	stats_multicov = open(('stats_%s_%s_%s_%s.txt'%(file_name[:-4], length,cov,gap)), 'w')
 	print output_name
 	#check if output already exists, if not execute mpileup
 	if os.path.exists('%s'%(output_name)) == False:
@@ -235,7 +242,7 @@ if __name__ == "__main__":
 	counter = 1
 	length = 18 # minumum length of selected piece 
 	#cov = 3 # botrytis
-	cov = 50 # minimum number of reads tomato
+	cov = 100 # minimum number of reads tomato
 	gap = 2
 	print 'length',length, 'cov',cov, 'gap', gap
 	file_name = 'merged_all_f_I.bam'
@@ -266,7 +273,7 @@ if __name__ == "__main__":
 	#print list_files
 
 	string_files = ' '.join(list_files)
-	bedtools_multicov(string_files, gff_file_nm)
+	bedtools_multicov(string_files, gff_file_nm, cov, length, gap)
 
 	'''		#counter += 1
 	for file_name in dirs:

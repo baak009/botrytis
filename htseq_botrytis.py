@@ -3,7 +3,7 @@
 """Htseq
 
 Author: Mirna Baak
-Last editted: 23-11-2015
+Last editted: 17-12-2015
 """
 #import modules
 from sys import argv
@@ -38,8 +38,13 @@ if __name__ == "__main__":
 	path2 = "/mnt/scratch/baak009/data/"
 	gff_file = "BcinB0510_finalannotations_January2015B.michael.gtf"
 	counter = 1
-	id_attribute = 'gene_name'
+	id_attribute = 'transcript_id'
+	file_name = "I12Am_mapped.sam"
+	htseq(path, file_name, path2, gff_file, id_attribute)
+
+	"""
 	for file_name in dirs:
 		if file_name[-4:] == ".sam" and counter == 1:
 			htseq(path, file_name, path2, gff_file, id_attribute)
-			#counter += 1
+			counter += 1
+			"""

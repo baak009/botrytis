@@ -12,7 +12,7 @@ import subprocess
 def size_selection(input_nm, minlength, maxlength):
 	""" size selection with bbmap reformat
 	"""
-	print "size selection
+	print "size selection"
 	output_nm = '%s_f.bam'%(input_nm[:-4])
 	cmd1 = 'reformat.sh in=%s out=%s minlength=%s maxlength=%s 2>stats_%s'%(
 		input_nm, output_nm, minlength, maxlength,output_nm)
