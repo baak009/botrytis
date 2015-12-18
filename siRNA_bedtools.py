@@ -12,17 +12,7 @@ from sys import argv
 import os
 import subprocess
 
-def bedtools_intersect(file_A, file_B, output_name, path):
-	""" Executing bedtools intersect 
 
-	"""
-	print 'executing bedtools intersect'
-	if os.path.exists(file_A) and os.path.exists(file_B) and os.path.exists(output_name) == False: 
-		cmd = "bedtools intersect -a %s -b %s > %s"%(file_A, file_B, output_name)
-		res1 = subprocess.check_call(cmd,shell=True)
-		print 'res1'
-		print res1
-    
 
 
 
@@ -90,7 +80,8 @@ def top_reads(input_nm): # get only the reads that
 	unique_file_handler = open(input_nm)
 	lines = unique_file_handler.readlines()
 	counter = 0
-	with open("topreads.txt", "a") as output:
+	
+	with open("topreads2.txt", "a") as output: # moet nog anders
 		#output.write(input_nm + '\n') 
 		for line in lines:
 			if counter == 0:
@@ -105,9 +96,10 @@ def bowtie(num_mismatch, file_name_fasta, ref_name): # we zijn hier
 	print "Executing bowtie with %s mismatches"%(num_mismatch)
 
 	output_sam = file_name_fasta[:-4] +str(num_mismatch) + 'a.sam'
+	output_bam = file_name_fasta[:-4] +str(num_mismatch) + 'a.bam'
 	print '2', output_sam
 
-	if os.path.exists(file_name_fasta) and os.path.exists(output_sam) == False:
+	if os.path.exists(file_name_fasta): #and os.path.exists(output_sam) == False:
 		#output_sam = file_name_fastq2[-1]+str(num_mismatch) + '.sam'
 		print '3', output_sam
 		cmd = 'bowtie -S -v %s -a %s -f %s %s 2> stats_%s_%s_a.txt'%(num_mismatch, ref_name, 
@@ -115,11 +107,56 @@ def bowtie(num_mismatch, file_name_fasta, ref_name): # we zijn hier
 		res1 = subprocess.check_call(cmd, shell=True)
 		print cmd
 		print res1
+		cmd2 = 'samtools view -b -S %s > %s.bam'%(output_sam, output_sam[:-4])
+		print cmd2
+		res2 = subprocess.check_call(cmd2,shell=True)
+		
+		print res2
 	
 	else:
 		print 'file does not exist'
-	#return output_sam
+	return output_bam
 
+def bedtools_intersect(bed_file, bam_file):
+	""" Executing bedtools intersect 
+
+	"""
+	print 'executing bedtools intersect'
+	output_name = "%s.filtered.bam"%(bam_file[:-4])
+	if os.path.exists(bed_file) and os.path.exists(bam_file):  #and os.path.exists(output_name) == False: 
+		cmd = "bedtools intersect -a %s -b %s > %s"%(bam_file, bed_file, output_name)
+		res1 = subprocess.check_call(cmd,shell=True)
+		print 'res1'
+		print res1
+		cmd2 = 'samtools view -h %s > %s.sam'%(output_name, output_name[:-4])
+		res2 = subprocess.check_call(cmd2,shell=True)
+		print cmd2
+		print res2
+    
+def bedtools_intersect2(gff_file, bam_file):
+	""" Executing bedtools intersect getting the gff file contents matching your query
+
+	"""
+	print 'executing bedtools intersect'
+	output_name = "%s.filtered.bed"%(bam_file[:-4])
+	if os.path.exists(bed_file) and os.path.exists(bam_file):  #and os.path.exists(output_name) == False: 
+		cmd = "bedtools intersect -wb -a %s -b %s > %s"%(gff_file, bam_file, output_name)
+		res1 = subprocess.check_call(cmd,shell=True)
+		print 'res1'
+		print res1
+		#cmd2 = 'samtools view -h %s > %s.sam'%(output_name, output_name[:-4])
+		#res2 = subprocess.check_call(cmd2,shell=True)
+		#print cmd2
+		#print res2
+		return output_name
+
+def parser_cleaner(input_bedintersect):
+	"""Select only the lines with CDS and UTR in it. 
+	"""
+	cmd = "cat %s |grep 'UTR\|CDS' > %s.utr_cds.txt"%(input_bedintersect, input_bedintersect[:-4])
+	res1 = subprocess.check_call(cmd,shell=True)
+	print 'res1'
+	print res1
 
 
 if __name__ == "__main__":
@@ -134,11 +171,15 @@ if __name__ == "__main__":
 	lines = file_handler.readlines()
 	get_region(lines, file_name_B)
 	num_mismatch = 0 
-	file_name_reads = 'topreads.txt'
+	file_name_reads = 'topreads2.txt'
 	fasta_genome_name = "S_lycopersicum_chromosomes.2.50.fa"
 	ref_name = "S_lyn_2_50"
-	bowtie(num_mismatch, file_name_reads, ref_name)
-
+	output_bam = bowtie(num_mismatch, file_name_reads, ref_name)
+	bed_file = "ITAG2.4_gene_models.gene.bed"
+	gff_file = "ITAG2.4_gene_models.gff3"
+	bedtools_intersect(bed_file,output_bam)
+	input_bedintersect = bedtools_intersect2(gff_file,output_bam)
+	parser_cleaner(input_bedintersect)
 	#bedtools_intersect(file_name_A, file_name_B, output_name, path)
 	#output_nm = bamtofastq(output_name)
 	#output_nm = unique_reads(output_nm)
