@@ -13,13 +13,7 @@ import os
 import subprocess
 
 
-
-
-
-	
-
-
-def get_region(lines, bam_file):
+def get_region(lines, bam_file, file_name_reads):
 	#print lines
 	for line in lines:
 		#print line
@@ -30,10 +24,10 @@ def get_region(lines, bam_file):
 		end = line[4]
 		format = "%s:%s-%s"%(chrom,start,end)
 		outputname = "reads_%s_%s_%s.bam"%(chrom,start,end)
-		samtools_view(bam_file, format, outputname)
+		samtools_view(bam_file, format, outputname, file_name_reads)
 
 
-def samtools_view(bam_file, format, outputname):
+def samtools_view(bam_file, format, outputname, file_name_reads):
 	print 'executing samtools view'
 	
 	if os.path.exists(bam_file) and os.path.exists(outputname) == False: 
@@ -44,23 +38,26 @@ def samtools_view(bam_file, format, outputname):
 
 	else:
 		print 'file already exists'
-	bamtofastq(outputname)
+	bamtofastq(outputname, file_name_reads)
 
 
-def bamtofastq(file_name_bam):
+def bamtofastq(file_name_bam, file_name_reads):
 	print 'bam to fastq'
 	output_nm = '%s.fastq'%(file_name_bam[:-4])
 	if os.path.exists(file_name_bam) and os.path.exists(output_nm) == False:
 		cmd2 = 'bedtools bamtofastq -i %s -fq %s'%(file_name_bam,output_nm)
 		e = subprocess.check_output(cmd2, shell=True)
 		print e
+		cmd3 = 'rm %s'%(file_name_bam)
+		f = subprocess.check_output(cmd3, shell=True)
+		print f
 	else:
 		print 'bam to fastq not executed'
 
-	unique_reads(output_nm)
+	unique_reads(output_nm, file_name_reads)
 	#return output_nm
 
-def unique_reads(input_nm):
+def unique_reads(input_nm,file_name_reads):
 	print 'unique reads'
 	output_nm = '%s_unique.fasta'%(input_nm[:-6])
 	cmd1 = 'fastx_collapser -i %s -o %s'%(input_nm, output_nm) # only on meyers
@@ -73,15 +70,16 @@ def unique_reads(input_nm):
 	else:
 		print 'file already created or not existing'
 	print 'done'
-	top_reads(output_nm)
+	top_reads(output_nm, file_name_reads)
 
-def top_reads(input_nm): # get only the reads that 
+def top_reads(input_nm, file_name_reads): # get only the reads that 
 
 	unique_file_handler = open(input_nm)
 	lines = unique_file_handler.readlines()
 	counter = 0
 	
-	with open("topreads2.txt", "a") as output: # moet nog anders
+	#with open("topreads2.txt", "a") as output: # moet nog anders
+	with open(file_name_reads, "a") as output: # moet nog anders	
 		#output.write(input_nm + '\n') 
 		for line in lines:
 			if counter == 0:
@@ -159,6 +157,7 @@ def parser_cleaner(input_bedintersect):
 	print res1
 
 
+
 if __name__ == "__main__":
 	path = os.getcwd()
 
@@ -169,9 +168,10 @@ if __name__ == "__main__":
 
 	file_handler = open(file_name_A)
 	lines = file_handler.readlines()
-	get_region(lines, file_name_B)
+	file_name_reads = '%s_topreads.txt'%(file_name_A[:-4])
+	get_region(lines, file_name_B, file_name_reads)
 	num_mismatch = 0 
-	file_name_reads = 'topreads2.txt'
+	
 	fasta_genome_name = "S_lycopersicum_chromosomes.2.50.fa"
 	ref_name = "S_lyn_2_50"
 	output_bam = bowtie(num_mismatch, file_name_reads, ref_name)
@@ -180,6 +180,7 @@ if __name__ == "__main__":
 	bedtools_intersect(bed_file,output_bam)
 	input_bedintersect = bedtools_intersect2(gff_file,output_bam)
 	parser_cleaner(input_bedintersect)
+
 	#bedtools_intersect(file_name_A, file_name_B, output_name, path)
 	#output_nm = bamtofastq(output_name)
 	#output_nm = unique_reads(output_nm)

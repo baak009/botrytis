@@ -108,7 +108,17 @@ def extract_gene__id_name(lines):
 		id_name = temp[-1]
 		print name, id_name
 
-
+def extract_mRNA(lines, output_name):
+        output = open(output_name,'w')
+        for line in lines:
+                line_temp = line.strip().split()
+		if line_temp[0].startswith('#'):
+			continue
+		elif 'mRNA' in line_temp[2]:
+			output.write(line)
+			#region_all = region_all + region_f
+                        
+        output.close()
 if __name__ == "__main__":
 	file_name = argv[1]
 	#ref_genome = argv[2] # S_lycopersicum_chromosomes.2.50.fa
@@ -119,9 +129,11 @@ if __name__ == "__main__":
 	#output_bed_nm = file_name[:-4] + 'gene.bed'
 	#output_fa_nm = file_name[:-4] + 'UTR.fa'
 	output_cds_nm = file_name[:-4] + 'CDS.bed'
+	output_mRNA_nm = file_name[:-4] + 'mRNA.gff3'
 	#extract_UTR(lines, output_bed_nm)
 	#extract_genes(lines, output_bed_nm)
 	extract_CDS(lines, output_cds_nm)
+	extract_mRNA(lines, output_mRNA_nm)
 	#getfasta(ref_genome, output_bed_nm, output_fa_nm)
 	#faidx(ref_genome, region, output_name)
 	#while True():
