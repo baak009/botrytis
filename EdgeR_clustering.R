@@ -30,7 +30,7 @@ hc_tree <- hclust (genes.dist, method="complete" )
 
 # pdf(file=paste("patterns_",temperature,".pdf",sep=""),12,8)
 jpeg('E:/thesis/outhtseq_botrytis_merged/hctree.jpg')
-plot(hc_tree, xlab = NULL)
+plot(hc_tree)
 dev.off()
 
 hc<- cutree(hc_tree, h=0.4)
@@ -65,3 +65,4 @@ clust1 = row.names(data)[hc==clust] # get the names of the genes in the cluster
 clust1[1]
 dge.cpm[clust1,] # get the normalized values of the genes. in the cluster. 
 write.csv(dge.cpm[clust1,], file = paste("E:/thesis/outhtseq_botrytis_merged/clust", clust, ".csv", sep=""))
+

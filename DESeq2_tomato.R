@@ -15,8 +15,8 @@ padjValue <- 0.05 # define this
 sampleFiles <- grep(".txt", list.files(directory), value = TRUE)
 
 #sampleCondition <-sub("(...*).*","\\1", sampleFiles) 
-#sampleCondition = c("I12","I12", "I16", "I16", "I24", "I24", "M", "M", "M") # define this
-sampleCondition = c("I","I", "I", "I", "I", "I", "M", "M", "M") # define this
+sampleCondition = c("I12","I12", "I16", "I16", "I24", "I24", "M", "M", "M") # define this
+#sampleCondition = c("I","I", "I", "I", "I", "I", "M", "M", "M") # define this
 sampleTable <- data.frame(sampleName = sampleFiles,
                           fileName = sampleFiles,
                           condition = sampleCondition)
@@ -77,3 +77,23 @@ pheatmap(sampleDistMatrix,
          clustering_distance_rows=sampleDists,
          clustering_distance_cols=sampleDists,
          col=colors)
+
+plotCounts(dds,gene = 'gene:Solyc09g042740.2', intgroup = c("condition"))
+plotCounts(dds,gene = 'gene:Solyc01g066560.2', intgroup = c("condition"))
+plotCounts(dds,gene = 'gene:Solyc04g049620.2', intgroup = c("condition"))
+plotCounts(dds,gene = 'gene:Solyc12g056280.1', intgroup = c("condition"))
+par(pch = 8, col = 'black')
+
+par
+#saving of the normalized counts of dds
+normalized.counts <- as.data.frame(counts(dds,normalized=TRUE))
+colnames(normalized.counts) = sampleCondition
+sub = normalized.counts['gene:Solyc09g042740.2',]
+sub = t(sub)
+barplot(sub)
+
+
+#to save your dds dataset
+save(dds,file="E:/thesis/dds.RData")
+#to load the dds dataset
+load(file="E:/thesis/dds.RData")
