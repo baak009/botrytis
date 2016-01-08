@@ -5,20 +5,34 @@
 from sys import argv
 import os
 import subprocess
-def gff_change_chr_name(lines): # does not work
-	print lines
+def gff_change_chr_name(file_name, lines): # only for botrytis
+	output_nm  = "%s_new.gff3"%(file_name[:-5])
+	output = open(output_nm, 'w')
 	prefix = 'BCIN'
 	for line in lines:
 		if line.startswith("#"):
-			continue
+			#print line
+			if len(line.strip()) == 3:
+				continue
+			else:
+				output.write(line)
+				#continue
 		else:
-			print line
-			line = line.split()
-			print line
+			
+			line = line.split('\t')
+			
 			chrom = str(line[0])
-			chrom_new = prefix + chrom
-			line_new = "%s\t%s"%(chrom_new, (line[1:]))
+			#print len(chrom)
+			if len(chrom) == 1:
+				chrom_new = prefix + '0' + chrom
+				#print chrom_new
+			else:
+				chrom_new = prefix + chrom
+			line_new = "%s\t%s\t%s\n"%(chrom_new, ('\t'.join(line[1:-1])), line[-1])
+			output.write(line_new)
 			#print line_new
+	output.close()
+
 
 def extract_UTR(lines, output_name):
 	region_all = ""
@@ -128,16 +142,16 @@ if __name__ == "__main__":
 	#output_bed_nm = file_name[:-4] + 'UTR.bed'
 	#output_bed_nm = file_name[:-4] + 'gene.bed'
 	#output_fa_nm = file_name[:-4] + 'UTR.fa'
-	output_cds_nm = file_name[:-4] + 'CDS.bed'
-	output_mRNA_nm = file_name[:-4] + 'mRNA.gff3'
+	#output_cds_nm = file_name[:-4] + 'CDS.bed'
+	#output_mRNA_nm = file_name[:-4] + 'mRNA.gff3'
 	#extract_UTR(lines, output_bed_nm)
 	#extract_genes(lines, output_bed_nm)
-	extract_CDS(lines, output_cds_nm)
-	extract_mRNA(lines, output_mRNA_nm)
+	#extract_CDS(lines, output_cds_nm)
+	#extract_mRNA(lines, output_mRNA_nm)
 	#getfasta(ref_genome, output_bed_nm, output_fa_nm)
 	#faidx(ref_genome, region, output_name)
 	#while True():
 	# OSError: Argument list too long.... 
 
-	#gff_change_chr_name(lines)
+	gff_change_chr_name(file_name, lines)
 	#extract_gene__id_name(lines)

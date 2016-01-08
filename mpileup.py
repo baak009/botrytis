@@ -242,7 +242,7 @@ if __name__ == "__main__":
 	counter = 1
 	length = 18 # minumum length of selected piece 
 	#cov = 3 # botrytis
-	cov = 5000 # minimum number of reads tomato
+	cov = 7500 # minimum number of reads tomato
 	gap = 2
 	print 'length',length, 'cov',cov, 'gap', gap
 	file_name = 'merged_all_f_I.bam' # define
