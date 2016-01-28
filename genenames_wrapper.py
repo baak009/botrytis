@@ -9,8 +9,11 @@ if __name__ == "__main__":
 	dirs = os.listdir(path)
 	#terms = '/mnt/scratch/baak009/mRNA/ITAG2.4_gene_models.mRNA.gff3'
 	terms = '/mnt/scratch/baak009/data/Botrytis_cinerea_GO_annotation_EBI_june2015.txt'
+	#terms = '/mnt/scratch/baak009/data/ITAG2.4.go_term.txt'
 	for file_name in dirs:
-		if file_name[-4:] == ".csv" and file_name[-8:] != 'gene.csv':
+		#if file_name[-4:] == ".csv" and file_name[-8:] != 'gene.csv':
+		if file_name[-4:] == ".csv":
+		#if file_name[-8:] == "gene.csv":
 			print file_name
 			print os.getcwd()
 			cmd = ('python ~/gitrepos/botrytis/genenames.py %s %s'%(terms, file_name))

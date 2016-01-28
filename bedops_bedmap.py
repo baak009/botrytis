@@ -3,7 +3,7 @@ import os
 import subprocess
 
 def bedtogff(gff_file_nm, type_f):
-	print 'executing bedops bed to gff'
+	print 'executing bedops gff to bed'
 	if type_f == 0:
 		output_name = "%s.bed"%(gff_file_nm[:-4])
 	if type_f == 1:

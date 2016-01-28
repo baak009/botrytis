@@ -200,7 +200,7 @@ def bedtools_multicov(file_names, gff_file_nm, cov, length, gap):
 	print output_name
 	#check if output already exists, if not execute mpileup
 	if os.path.exists('%s'%(output_name)) == False:
-		cmd = 'cd ..; bedtools multicov -bams %s -bed ./pileup/%s > %s'%(file_names,
+		cmd = 'cd ..; bedtools multicov -bams %s -bed ./pileup/%s > pileup/%s'%(file_names,
 		gff_file_nm, output_name) # bed file path moet nog anders
 		print cmd 
 		e = subprocess.check_call(cmd, shell=True)
