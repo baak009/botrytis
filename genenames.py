@@ -71,10 +71,42 @@ def add_gene_names(lines_genes, dict_term, output_name):
             output.write(str_output)
     output.close()
 
+def add_gene_names3(lines_genes, dict_term, output_name):
+    # using with the go terms file
+    output = open(output_name,'w')
+    
+    for line in lines_genes:
+        line_tmp = line.strip().split()
+        print line_tmp
+        if line_tmp[0].startswith('#') or line_tmp[0].startswith('""'):
+            output.write("%s,GO_id,GO_term\n"%(line.strip()))
+ 
+        else:
+            if line_tmp[0].startswith('"gene'):
+                gene = line_tmp[0][6:-1]
+            elif line_tmp[0].startswith('"Bcin'):
+                gene = line_tmp[0][1:-1]
+            else:
+                gene = line_tmp[1]
+            print gene
+            if dict_term.has_key(str(gene)): #changed
+                print gene
+                #print dict_term[gene]
+                term = dict_term[str(gene)]
+                term_p = ','.join(term)
+                str_output = "%s,%s\n"%(line.strip(),term_p)
+            else:
+                #print gene
+                term_p = "."
+                str_output = "%s,%s\n"%(line.strip(),term_p)
+            #print str_output
+            output.write(str_output)
+    output.close()
+
 def add_gene_names2(lines_genes, dict_term, output_name):
     #using with the itag gene model file
     output = open(output_name,'w')
-    
+    print dict_term
     for line in lines_genes:
         line_tmp = line.strip().split(',')
         if line_tmp[0].startswith('#') or line_tmp[0].startswith('""'):
@@ -86,7 +118,7 @@ def add_gene_names2(lines_genes, dict_term, output_name):
             elif line_tmp[0].startswith('"Bcin'):
                 gene = line_tmp[0][1:-1]
             else:
-                gene = line_tmp[0]
+                gene = line_tmp[0] #
             if dict_term.has_key(str(gene)): #changed
                 count = 0
                 #print gene
@@ -115,6 +147,50 @@ def add_gene_names2(lines_genes, dict_term, output_name):
             output.write(str_output)
     output.close()
 
+def add_gene_names4(lines_genes, dict_term, output_name):
+    #using with the itag gene model file
+    output = open(output_name,'w')
+    print dict_term
+    for line in lines_genes:
+        line_tmp = line.strip().split()
+        print line_tmp
+        if line_tmp[0].startswith('#') or line_tmp[0].startswith('""'):
+            output.write("%s,note,name, parent, additional\n"%(line.strip()))
+            print 'ja'
+        else:
+            if line_tmp[0].startswith('"gene'):
+                gene = line_tmp[0][6:-1]
+            elif line_tmp[0].startswith('"Bcin'):
+                gene = line_tmp[0][1:-1]
+            else:
+                gene = line_tmp[1] #
+            if dict_term.has_key(str(gene)): #changed
+                count = 0
+                #print gene
+                #print dict_term[gene]
+                term = dict_term[str(gene)]
+                name = '.'
+                parent = '.'
+                note = '.'
+                rest = '.'
+                for item in term:
+                    if item.startswith('Name='):
+                        name = item[5:]
+                    elif item.startswith('Parent='):
+                        parent = item[7:]
+                    elif item.startswith('Note='):
+                        note = item[5:]
+                    else:
+                        rest = "\trest:\t%s"%(item)
+
+                str_output = "%s,%s,%s,%s,%s\n"%(line.strip(),note, name, parent, rest)
+            else:
+                #print gene
+                term_p = "."
+                str_output = "%s,%s\n"%(line.strip(),term_p)
+            #print str_output
+            output.write(str_output)
+    output.close()
 if __name__ == "__main__":
     file_name = argv[1] # ITAG.mRNA.gff3
     genes_name = argv[2] # sig.csv
@@ -129,10 +205,12 @@ if __name__ == "__main__":
         print 'go terms botrytis'
         output_name = "%s_go.csv"%(genes_name[:-4])
         dict_term = dict_go_terms(lines_itag)
-        add_gene_names(lines_genes, dict_term, output_name)
+        #add_gene_names(lines_genes, dict_term, output_name)
+        add_gene_names3(lines_genes, dict_term, output_name)
     else: # itag tomato
         print 'itag tomato'
         output_name = "%s_gene.csv"%(genes_name[:-4])
         dict_term = dict_gene_terms(lines_itag)
-        add_gene_names2(lines_genes, dict_term, output_name)
+        #add_gene_names2(lines_genes, dict_term, output_name)
+        add_gene_names4(lines_genes, dict_term, output_name)
 

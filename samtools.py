@@ -42,10 +42,10 @@ if __name__ == "__main__":
 	dirs = os.listdir(path)
 	counter = 1
 	#file_name = "I12As_trimmed0.mapped0.un_mapped0_clean.sorted_f.mapped_a.sam"
-	file_name = argv[1]
-	sam_to_bam(file_name)
-	#for file_name in dirs:
-	#	if file_name[-4:] == ".sam" and counter == 1:
-	#		sam_to_bam(file_name)
+	#file_name = argv[1]
+	#sam_to_bam(file_name)
+	for file_name in dirs:
+		if file_name[-5:] == "a.sam" and counter == 1:
+			sam_to_bam(file_name)
 
 

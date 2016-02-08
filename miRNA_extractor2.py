@@ -3,7 +3,6 @@ miRNA extractor
 use a pileup file
 calculate the number of start en stop of reads per position. 
 
-build in per chromosome
 """
 
 from sys import argv
@@ -12,6 +11,19 @@ import subprocess
 import re
 
 def read_pileup(pileup_fnm):
+	"""Loop through pileup file to extract the number of starts
+	and ends of reads at a position
+
+	pileup_fnm = pileup file name
+
+	l_n_begin = list of number of starts per position on positive strand
+	l_n_end = list of number of ends per position on positive strand
+	l_n_begin_r = = list of number of starts per position on negative strand
+	l_n_end_r = list of number of ends per position on negative strand
+	l_chr = list of the chromosome per position
+	l_b_pos = list of begin positions
+	"""
+
 	print 'read pileup file'
 	file_handler = open(pileup_fnm, 'r')
 	l_chr = []
@@ -47,14 +59,30 @@ def read_pileup(pileup_fnm):
 	return l_n_begin, l_n_end, l_n_begin_r, l_n_end_r, l_chr, l_b_pos
 
 def extract_pos(l_n_begin, l_n_end, l_chr, l_b_pos, output_nm, thr_begin, thr_end, sign):
-	"""check if numbering start position is correct -1 or +1
+	""" Take the positions above the threshold and get the sRNAs
+		 start and end positions
+
+	l_n_begin = list of number of starts per position 
+	l_n_end = list of number of ends per position 
+	l_chr = list of the chromosome per position
+	l_b_pos = list of begin positions
+	output_nm = name of the gff outputfile produced in this function
+	thr_begin = threshold of number of starts of a read
+	thr_end = threshold of number of ends of a read
+	sign = + or - depending of positive or negative strand
+
+	temp_list = list with tuples with positions of sRNAs that are above threshold
+	 consisting of (chromsome, begin position, end positions, sign, number of starts,
+	 number of ends, length of sequence.)
 	"""
+	
 	print 'extract positions '+ sign + ' strand'
 	output = open(output_nm, 'w')
-	#output.write("Chr\tbegin\tend\tnm_reads_begin\tnm_reads_end\n")
+
 	threshold = int(thr_begin) # 300
 	temp = []
 	temp_list = []
+
 	for x in range(len(l_n_begin)):
 		if l_n_begin[x] > threshold:
 			end_temp = None
@@ -66,12 +94,11 @@ def extract_pos(l_n_begin, l_n_end, l_chr, l_b_pos, output_nm, thr_begin, thr_en
 						pos_end_temp = x+y
 				except:
 					continue
+
 			if int(end_temp) > int(thr_end): #10
 				end_position = int(l_b_pos[x]) + (pos_end_temp - x)
-				#str_all = (l_chr[x],l_b_pos[x], end_position, l_n_begin[x],end_temp, x,pos_end_temp)
-				#temp.append(str_all)
 
-				output.write("%s\tmiRNA_extractor.py\tmiRNA\t%s\t%s\t.\t%s\t.\t%s,%s,%s\n"%
+				output.write("%s\tmiRNA_extractor.py\tsRNA\t%s\t%s\t.\t%s\t.\t%s,%s,%s\n"%
 					(l_chr[x],(int(l_b_pos[x])), end_position, sign,l_n_begin[x],
 						end_temp,(int(end_position)- int(l_b_pos[x]) +1)))
 				temp_list.append((l_chr[x],(int(l_b_pos[x])), end_position, sign,l_n_begin[x],
@@ -79,15 +106,13 @@ def extract_pos(l_n_begin, l_n_end, l_chr, l_b_pos, output_nm, thr_begin, thr_en
 			else:
 				print 'for %s\t%s position, starting reads:%s no end position in range is found.'%(
 					l_chr[x],l_b_pos[x], l_n_begin[x])
-				
-	#temp = temp.sort()
 
 	output.close()
 	return temp_list	
-	#print temp
+
+"""
 def extract_pos_reverse_comp(l_n_begin_r, l_n_end_r, l_chr, l_b_pos, output_nm, thr_begin, thr_end):
-	"""check if numbering start position is correct -1 or +1
-	"""
+	
 	print 'extract positions reverse strand'
 	output = open(output_nm, 'w')
 	#output.write("Chr\tbegin\tend\tnm_reads_begin\tnm_reads_end\n")
@@ -98,7 +123,7 @@ def extract_pos_reverse_comp(l_n_begin_r, l_n_end_r, l_chr, l_b_pos, output_nm, 
 		#print l_n_end_r[x]
 		if l_n_end_r[x] > int(threshold):
 			begin_temp = None
-			for y in range(16,24): # is length 20 till 24
+			for y in range(19,24): # is length 20 till 24
 				try:
 					if y <= x:
 						begin_p = l_n_begin_r[x-y]
@@ -128,10 +153,16 @@ def extract_pos_reverse_comp(l_n_begin_r, l_n_end_r, l_chr, l_b_pos, output_nm, 
 	output.close()
 	return temp_list
 	#print temp
+"""
 
 def filter_file(temp_list, output_nm_filter):
 	"""filter file that if end position is the same one sRNA will remain.
 	take the longest sequence with same end position
+
+	temp_list = list with tuples with positions of sRNAs that are above threshold
+	 consisting of (chromsome, begin position, end positions, sign, number of starts,
+	 number of ends, length of sequence.)
+	output_nm_filter = file name of output
 	"""
 	print 'filter positions'
 	#output = open(output_nm_filter, 'w')
@@ -145,7 +176,7 @@ def filter_file(temp_list, output_nm_filter):
 				#print x
 				temp_end = end
 
-				output.write("%s\tmiRNA_extractor.py\tmiRNA\t%s\t%s\t.\t%s\t.\t%s,%s,%s\n"%
+				output.write("%s\tmiRNA_extractor.py\tsRNA\t%s\t%s\t.\t%s\t.\t%s,%s,%s\n"%
 							(x[0],x[1], x[2], 
 								x[3], x[4], x[5], x[6]))
 
@@ -156,9 +187,15 @@ def filter_file(temp_list, output_nm_filter):
 
 def unique_pos(temp_list, note_ls, output_nm_unique):
 	"""extract only unique positions. If you use the multimapping files. 
+
+	temp_list = list with tuples with positions of sRNAs that are above threshold
+	 consisting of (chromsome, begin position, end positions, sign, number of starts,
+	 number of ends, length of sequence.)
+	note_ls = list of number of number of start, end en length of sRNAs
+
 	"""
 	print 'unique positions'
-	print temp_list
+	#rint temp_list
 	#output = open(output_nm_filter, 'w')
 	#output.write("Chr\tbegin\tend\tnm_reads_begin\tnm_reads_end\n")
 	with open(output_nm_unique, 'a') as output:
@@ -166,14 +203,14 @@ def unique_pos(temp_list, note_ls, output_nm_unique):
 		for x in temp_list:
 			#print 'x', x
 			note = (x[4],x[5],x[6])
-			print note
+			#print note
 			if note not in note_ls:
 				#print x
 				note_ls.append(note)
-				output.write("%s\tmiRNA_extractor.py\tmiRNA\t%s\t%s\t.\t%s\t.\t%s,%s,%s\n"%
+				output.write("%s\tmiRNA_extractor.py\tsRNA\t%s\t%s\t.\t%s\t.\t%s,%s,%s\n"%
 							(x[0],x[1], x[2], 
 								x[3], x[4], x[5], x[6]))
-	print note_ls
+	#print note_ls
 
 	return note_ls
 
@@ -186,6 +223,8 @@ if __name__ == "__main__":
 	note_ls = []
 	print 'threshold start', thr_begin
 	print 'threshold end', thr_end
+
+	# remove already existing files
 	if os.path.exists("%s_filter.gff"%(output_nm[:-4])): 
 		cmd = 'rm %s_filter.gff'%(output_nm[:-4])
 		res1 = subprocess.check_call(cmd, shell=True)
@@ -196,16 +235,18 @@ if __name__ == "__main__":
 		res1 = subprocess.check_call(cmd, shell=True)
 		print res1
 
+
 	l_n_begin, l_n_end, l_n_begin_r, l_n_end_r, l_chr, l_b_pos = read_pileup(pileup_fnm)
 	#output_nm_rev = "%s_rev.gff"%(output_nm[:-4]) #"pileupI24BsBCIN141707990_1708042_extract.gff"
+	# positive strand
 	sign = '+'
 	temp_list = extract_pos(l_n_begin, l_n_end, l_chr, l_b_pos, output_nm, thr_begin, thr_end, sign)
-	
 	output_nm_filter = "%s_filter.gff"%(output_nm[:-4])
 	output_nm_unique = "%s_unique.gff"%(output_nm[:-4]) 
 	filter_file(temp_list, output_nm_filter)
 	note_ls = unique_pos(temp_list, note_ls, output_nm_unique)
 	
+	#negative strand
 	sign = '-'
 	output_nm_rev = "%s_rev.gff"%(output_nm[:-4]) 
 	temp_list = extract_pos(l_n_begin_r, l_n_end_r, l_chr, l_b_pos, output_nm_rev, thr_begin, thr_end, sign)

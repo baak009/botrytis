@@ -12,7 +12,7 @@ from sys import argv
 import os
 import subprocess
 
-
+"""
 def get_region(lines, bam_file, file_name_reads):
 	#print lines
 	for line in lines:
@@ -90,6 +90,7 @@ def top_reads(input_nm, file_name_reads): # get only the reads that
 				output.write(line)
 				counter += 1
 
+
 def bowtie(num_mismatch, file_name_fasta, ref_name): # we zijn hier
 	print "Executing bowtie with %s mismatches"%(num_mismatch)
 
@@ -114,13 +115,14 @@ def bowtie(num_mismatch, file_name_fasta, ref_name): # we zijn hier
 	else:
 		print 'file does not exist'
 	return output_bam
+"""
 
 def bedtools_intersect(bed_file, bam_file):
 	""" Executing bedtools intersect 
 
 	"""
 	print 'executing bedtools intersect'
-	output_name = "%s.filtered.bam"%(bam_file[:-4])
+	output_name = "%s.filtered_g.bam"%(bam_file[:-4])
 	if os.path.exists(bed_file) and os.path.exists(bam_file):  #and os.path.exists(output_name) == False: 
 		cmd = "bedtools intersect -a %s -b %s > %s"%(bam_file, bed_file, output_name)
 		res1 = subprocess.check_call(cmd,shell=True)
@@ -161,24 +163,27 @@ def parser_cleaner(input_bedintersect):
 if __name__ == "__main__":
 	path = os.getcwd()
 
-	file_name_A =  argv[1]#"coo.gff"
-	file_name_B =  argv[2]#"merged I.bam"
+	#file_name_A =  argv[1]#"coo.gff"
+	#file_name_B =  argv[2]#"merged I.bam"
 
 	#output_name =  argv[3]#".bam"
 
-	file_handler = open(file_name_A)
-	lines = file_handler.readlines()
-	file_name_reads = '%s_topreads.txt'%(file_name_A[:-4])
-	get_region(lines, file_name_B, file_name_reads)
-	num_mismatch = 0 
+	#file_handler = open(file_name_A)
+	#lines = file_handler.readlines()
+	#file_name_reads = '%s_topreads.txt'%(file_name_A[:-4])
+	#get_region(lines, file_name_B, file_name_reads)
+	#num_mismatch = 0 
 	
-	fasta_genome_name = "S_lycopersicum_chromosomes.2.50.fa"
-	ref_name = "S_lyn_2_50"
-	output_bam = bowtie(num_mismatch, file_name_reads, ref_name)
-	bed_file = "ITAG2.4_gene_models.gene.bed"
-	gff_file = "ITAG2.4_gene_models.gff3"
-	bedtools_intersect(bed_file,output_bam)
-	input_bedintersect = bedtools_intersect2(gff_file,output_bam)
+	#fasta_genome_name = "S_lycopersicum_chromosomes.2.50.fa"
+	#ref_name = "S_lyn_2_50"
+	#output_bam = bowtie(num_mismatch, file_name_reads, ref_name)
+	bed_file = argv[1]
+	gff_file = argv[2]
+	bam_file = argv[3]
+	#bed_file = "ITAG2.4_gene_models.gene.bed"
+	#gff_file = "ITAG2.4_gene_models.gff3"
+	bedtools_intersect(bed_file, bam_file)
+	input_bedintersect = bedtools_intersect2(gff_file, bam_file)
 	parser_cleaner(input_bedintersect)
 
 	#bedtools_intersect(file_name_A, file_name_B, output_name, path)

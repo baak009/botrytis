@@ -1,6 +1,6 @@
 """Bowtie mapping script
 Mirna Baak
-last edited: 14-10-2015
+last edited: 2-2-2016
 includes function bowtie -a (multimapping)
 """
 import os
@@ -14,17 +14,17 @@ def bowtie_build(file_name, ref_name):
 		print e
 	else: 
 		print "index is already build"
-
+"""
 def bowtie(num_mismatch, file_name_fastq):
 	print "Executing bowtie with %s mismatches"%(num_mismatch)
 	file_name_fastq2 =  file_name_fastq.split('/')
-	print '1', file_name_fastq2[-1]
-	print '1.5', num_mismatch
+	#print '1', file_name_fastq2[-1]
+	#print '1.5', num_mismatch
 	output_sam = file_name_fastq2[-1][:-6]+str(num_mismatch) + 'a.sam'
-	print '2', output_sam
+	#print '2', output_sam
 	if os.path.exists(file_name_fastq) and os.path.exists(output_sam) == False:
 		#output_sam = file_name_fastq2[-1]+str(num_mismatch) + '.sam'
-		print '3', output_sam
+		#print '3', output_sam
 		cmd = 'bowtie -S -v %s -a %s %s %s 2> stats_%s_%s_a.txt'%(num_mismatch, ref_name, 
 			file_name_fastq, output_sam, file_name_fastq2[-1], num_mismatch)
 		res1 = subprocess.check_call(cmd, shell=True)
@@ -33,6 +33,32 @@ def bowtie(num_mismatch, file_name_fastq):
 	else:
 		print 'file does not exist'
 	return output_sam
+"""
+def bowtie(num_mismatch, file_name_fasta, ref_name): # we zijn hier
+	print "Executing bowtie with %s mismatches"%(num_mismatch)
+
+	output_sam = file_name_fasta[:-4] +str(num_mismatch) + 'a.sam'
+	output_bam = file_name_fasta[:-4] +str(num_mismatch) + 'a.bam'
+	print '2', output_sam
+
+	if os.path.exists(file_name_fasta): #and os.path.exists(output_sam) == False:
+		#output_sam = file_name_fastq2[-1]+str(num_mismatch) + '.sam'
+		print '3', output_sam
+		cmd = 'bowtie -S -v %s -a %s -f %s %s 2> stats_%s_%s_a.txt'%(num_mismatch, ref_name, 
+			file_name_fasta, output_sam, file_name_fasta[:-4], num_mismatch)
+		res1 = subprocess.check_call(cmd, shell=True)
+		print cmd
+		print res1
+		cmd2 = 'samtools view -b -S %s > %s.bam'%(output_sam, output_sam[:-4])
+		print cmd2
+		res2 = subprocess.check_call(cmd2,shell=True)
+		
+		print res2
+	
+	else:
+		print 'file does not exist'
+	return output_bam
+
 
 def sam_to_bam(sam_file):
 	""" sam to  bam with samtools
@@ -68,18 +94,18 @@ if __name__ == "__main__":
 	#file_name = "S_lycopersicum_chromosomes.2.50.fa"
 	ref_name = argv[2] # "B_cinB0510"
 	#ref_name = "S_lyn_2_50"
-	#bowtie_build(file_name, ref_name)
+	bowtie_build(file_name, ref_name)
 	#path2 = "/mnt/scratch/baak009/trimmed_adapt_reads/"
 	
 
 	
-	file_name_fastq = argv[3] #"I12As_S23_R1_001_trimmed.fastq"
+	file_name_fasta = argv[3] #"I12As_S23_R1_001_trimmed.fastq"
 	#file_name_fastq = "B16Bs_S19_h400.fastq"
 
 
-	num_mismatch = argv[-1] #0
+	num_mismatch = argv[4] #0
 	print '4', num_mismatch
 	#running bowtie
-	output_sam = bowtie(num_mismatch,file_name_fastq)
+	output_sam = bowtie(num_mismatch,file_name_fasta, ref_name)
 	#output_sam = 'I12As_S23_R1_001_trimmed0.sam' 
 	#sam_to_bam(output_sam)
